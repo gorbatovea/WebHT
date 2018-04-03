@@ -1,0 +1,53 @@
+.header
+{
+    font-size: 86px;
+    font-weight: 100;
+    color: rgba(175, 47, 47, .15);
+    text-align: center;
+}
+
+.links {
+    width: 500px;
+    height: 30px;
+    font-size: 25px;
+    font-weight: 100;
+    color: rgba(175, 47, 47, .15);
+    margin: 0 auto;
+    text-align: center;
+}
+
+.links-ref {
+    display: inline;
+    color: rgba(175, 47, 47, .15);
+}
+
+.form-input {
+    width: 700px;
+    height-min: 400px;
+    margin: 0 auto;
+}
+
+.form-input_key {
+    display: block;
+    width: 50%;
+    margin: 0 auto;
+}
+
+.form-input_value {
+    display: block;
+    width: 50%;
+    margin: 0 auto;
+}
+
+.form-input_submit {
+    display: block;
+    width: 50%;
+    margin: 0 auto;
+}
+
+.result {
+    padding-top: 20px;
+    width: 700px;
+    margin: 0 auto;
+    text-align: center;
+}
