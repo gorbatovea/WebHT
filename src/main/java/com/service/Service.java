@@ -4,7 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.model.EntityModel;
 import com.model.EntityRepository;
+import com.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Optional;
 
 @org.springframework.stereotype.Service
 public class Service {
@@ -15,81 +18,67 @@ public class Service {
     public EntityModel create(String body) {
         try {
             Entity entity = gson.fromJson(body, Entity.class);
-            Iterable<EntityModel> list = repository.findAll();
-            for (EntityModel item :
-                    list) {
-                if (item.getKey().equals(entity.getKey())) {
-                    return null;
+            if (Utils.isNumeric(entity.getId()) && entity.getValue() != null) {
+                if (!repository.existsById(Integer.parseInt(entity.getId()))) {
+                    EntityModel item = new EntityModel(Integer.parseInt(entity.getId()), entity.getValue());
+                    repository.save(item);
+                    return item;
                 }
             }
-            EntityModel item = new EntityModel(entity.getKey(), entity.getValue());
-            return repository.save(item);
         } catch (JsonSyntaxException jSE) {
             jSE.printStackTrace();
-            return null;
         }
+        return null;
     }
 
     public EntityModel get(String body) {
         try {
-            Id key = gson.fromJson(body, Id.class);
-            Iterable<EntityModel> list = repository.findAll();
-            for (EntityModel item :
-                    list) {
-                if (item.getKey().equals(key.getKey())) return item;
+            Id id = gson.fromJson(body, Id.class);
+            if (Utils.isNumeric(id.getId())) {
+                Integer identifier = Integer.parseInt(id.getId());
+                if (repository.existsById(identifier)) {
+                    Optional<EntityModel> optional = repository.findById(identifier);
+                    if (optional.isPresent()) return optional.get();
+                }
             }
-            return null;
         } catch (JsonSyntaxException jSE) {
             jSE.printStackTrace();
-            return null;
         }
+        return null;
     }
 
     public EntityModel update(String body) {
         try {
-            Iterable<EntityModel> list = repository.findAll();
             Entity entity = gson.fromJson(body, Entity.class);
-            for (EntityModel item :
-                    list) {
-                if (item.getKey().equals(entity.getKey())){
-                    item.setValue(entity.getValue());
-                    return repository.save(item);
+            if (Utils.isNumeric(entity.getId()) && entity.getValue() != null) {
+                Integer identifier = Integer.parseInt(entity.getId());
+                if (repository.existsById(identifier)) {
+                    EntityModel item = new EntityModel(identifier, entity.getValue());
+                    repository.save(item);
+                    return item;
                 }
             }
-            return null;
         } catch (JsonSyntaxException jSE) {
             jSE.printStackTrace();
-            return null;
-        }
-    }
-
-    private EntityModel update(Integer id, String key, String value) {
-        EntityModel entityModel = repository.findById(id).get();
-        if (entityModel.getKey().equals(key)) {
-            entityModel.setValue(value);
-            repository.save(entityModel);
-            return entityModel;
         }
         return null;
     }
 
     public EntityModel delete(String body) {
         try {
-            Iterable<EntityModel> list = repository.findAll();
-            Entity entity = gson.fromJson(body, Entity.class);
-            for (EntityModel item :
-                    list) {
-                if (item.getKey().equals(entity.getKey())){
-                    repository.deleteById(item.getId());
-                    if (!repository.existsById(item.getId())) return item;
-                    else return null;
+            Id id = gson.fromJson(body, Id.class);
+            if (Utils.isNumeric(id.getId())) {
+                Integer identifier = Integer.parseInt(id.getId());
+                if (repository.existsById(identifier)) {
+                    EntityModel item = repository.findById(identifier).get();
+                    repository.deleteById(identifier);
+                    return item;
                 }
             }
-            return null;
         } catch (JsonSyntaxException jSE) {
             jSE.printStackTrace();
-            return null;
         }
+        return null;
     }
 
     public Iterable<EntityModel> drop(){
@@ -99,28 +88,28 @@ public class Service {
     }
 
     private class Id {
-        private String key;
+        private String id;
 
-        public String getKey() {
-            return key;
+        public String getId() {
+            return id;
         }
 
-        public void setKey(String key) {
-            this.key = key;
+        public void setKey(String id) {
+            this.id = id;
         }
     }
     private class Entity {
-        private String key;
+        private String id;
         private String value;
 
         public Entity(){};
 
-        public String getKey() {
-            return key;
+        public String getId() {
+            return id;
         }
 
         public void setKey(String id) {
-            this.key = id;
+            this.id = id;
         }
 
         public String getValue() {

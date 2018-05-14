@@ -12,18 +12,15 @@ function request(method, url, callback, body) {
     }
 }
 
-function resultFactory(id, key, value) {
+function resultFactory(id, value) {
     var div = document.createElement('div');
     div.setAttribute('class', 'result-item');
-    if (id !== undefined && key !== undefined && value !== undefined){
+    if (id !== undefined && value !== undefined){
         var itemId = document.createElement('p');
-        var itemKey = document.createElement('p');
         var itemValue = document.createElement('p');
         itemId.innerText = 'id=\"' + id + '\"';
-        itemKey.innerText = 'key=\"' + key + '\"';
         itemValue. innerText = 'value=\"' + value + '\"';
         div.appendChild(itemId);
-        div.appendChild(itemKey);
         div.appendChild(itemValue);
     } else {
         var item = document.createElement('p');
@@ -32,4 +29,11 @@ function resultFactory(id, key, value) {
     }
     if (result.children[0] !== undefined) result.children[0].remove();
     result.appendChild(div);
+}
+
+function isDigit(value) {
+    for(var i = 0; i < value.length; i++) {
+        if (isNaN(value[i])) return false;
+    }
+    return true;
 }
